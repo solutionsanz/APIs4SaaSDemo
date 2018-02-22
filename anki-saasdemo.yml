@@ -1,0 +1,437 @@
+swagger: "2.0"
+info:
+  description: "This project provides a platform to use a chatbot to promote SaaS by easily integrating into Oracle Sales Cloud and Oracle ERP Cloud."
+  version: "2.1.0"
+  title: "APIs 4 SaaS Demo"
+  #termsOfService: "http://apismadeeasy.cloud/terms"
+  contact:
+    email: "carlos.rodriguez.iturria@oracle.com"
+  #license:
+  #  name: "Apache 2.0"
+  #  url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: "/"
+#host: "localhost:3000"
+#basePath: "/api/saasdemo"
+host: "apipdev.oracleau.cloud"
+tags:
+- name: "Gifts"
+  description: "Order can be umbrellas, caps, squeeze balls, etc."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+- name: "Promos"
+  description: "Promos can be white papers, customer reference, videos, etc. about areas such as ERP Cloud, CX, HCM, Integration, Process, Mobile, Chatbots, Blockchain, Jokes, etc."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+- name: "Contacts"
+  description: "Contacts are people who have interacted with these APIs to organise a gift or promo to be delivered to them."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+- name: "Orders"
+  description: "Orders occur when a Contact requests a Gift or Promo resource."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+schemes:
+- "https"
+#- "http"
+security:
+  - X-MyAPI-Key: []
+paths:
+  /gifts:
+    get:
+      tags:
+      - "Gifts"
+      summary: "Finds all available gift records."
+      description: "Gets all gift records"
+      operationId: "getGifts"
+      produces: 
+        - "application/json"
+      responses:
+        200:
+          description: "Returns the full list of Gifts."
+          schema:
+            properties:
+              Gifts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/GiftResponse"
+
+  /promos:
+    get:
+      tags:
+      - "Promos"
+      summary: "Finds all available promos."
+      description: "Gets all promos"
+      operationId: "getPromos"
+      produces: 
+        - "application/json"
+      responses:
+        200:
+          description: "Returns the full list of Promos."
+          schema:
+            properties:
+              Promos:
+                type: "array"
+                items:
+                  $ref: "#/definitions/PromoResponse"
+
+  /contacts:
+    get:
+      tags:
+      - "Contacts"
+      summary: "Finds all available Contact records or by Id if id parameter is provided."
+      description: "Gets all contact records"
+      operationId: "getContacts"
+      produces: 
+        - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "Contact id used to filter the contact record to be returned."
+        required: false
+        type: "string"
+        x-example: '12345678ABCDEF'
+      - name: "name"
+        in: "query"
+        description: "Contact name used to filter the contact record to be returned."
+        required: false
+        type: "string"
+        x-example: 'Joe Mero'
+      - name: "email"
+        in: "query"
+        description: "Contact email used to filter the contact record to be returned."
+        required: false
+        type: "string"
+        x-example: 'joe.mero@email.com'
+      responses:
+        200:
+          description: "Returns the full list of Contacts."
+          schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/ContactResponse"
+    post:
+      tags:
+      - "Contacts"
+      summary: "Creates new available Contact(s) to choose from."
+      description: "Returns the Id and the new Contact(s)."
+      operationId: "postContacts"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Contact(s) that need to be added."
+        required: true
+        schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/ContactRequest"
+      responses:
+        200:
+          description: "Returns the Id and the just created Contact(s)."
+          schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: '#/definitions/ContactResponse'
+                  
+            
+  /orders:
+    get:
+      tags:
+      - "Orders"
+      summary: "Finds all available Orders."
+      description: "Gets all orders"
+      operationId: "getOrders"
+      produces: 
+        - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "Field name used to filter the order record to be returned."
+        required: false
+        type: "string"
+        x-example: '12345678ABCDEF'
+      responses:
+        200:
+          description: "Returns the full list of Orders."
+          schema:
+            properties:
+              Orders:
+                type: "array"
+                items:
+                  $ref: "#/definitions/OrderResponse"
+    post:
+      tags:
+      - "Orders"
+      summary: "Creates new available Order(s) to choose from."
+      description: "Returns the Id and the new Order(s)."
+      operationId: "postOrders"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Order(s) that need to be added."
+        required: true
+        schema:
+            properties:
+              Orders:
+                type: "array"
+                items:
+                  $ref: "#/definitions/OrderRequest"
+      responses:
+        200:
+          description: "Returns the Id and the just created Order(s)."
+          schema:
+            properties:
+              Orders:
+                type: "array"
+                items:
+                  $ref: '#/definitions/OrderResponse'
+                  
+  /orders/{id}/status:
+    put:
+      tags:
+      - "Orders"
+      summary: "Updates Order status."
+      description: "Returns the Id and the new Order(s)."
+      operationId: "updateOrderStatus"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Id for oder record to be updated."
+        required: true
+        type: "string"
+        x-example: '1a23ee45f678af121bfe1245aa'            
+      - in: "body"
+        name: "body"
+        description: "Status of Order to be updated to."
+        required: true
+        schema:
+            properties:
+              Order:
+                type: "object"
+                required:
+                - "Status"
+                properties:
+                  Status:
+                    type: "string"
+                    example: "closed"  
+      responses:
+        200:
+          description: "Returns the Id and the updated order."
+          schema:
+            properties:
+              Order:
+                type: "object"
+                required:
+                - "_id"
+                properties:
+                  _id:
+                    type: "string"
+                    example: "12345678abcdef"                
+
+securityDefinitions:
+  X-MyAPI-Key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+definitions:
+
+  GiftResponse:
+    type: "object"
+    required:
+    - "Item"
+    properties:
+      Item:
+        type: "string"
+        example: "Umbrella"
+      Brand:
+        type: "string"
+        example: "Oracle"
+      CostInAUD:
+        type: "string"
+        example: "20"
+        
+  PromoResponse:
+    type: "object"
+    required:
+    - "_id"
+    - "Name"
+    - "Type"
+    - "Reference"
+    - "Category"
+    properties:
+      _id:
+        type: "string"
+        example: "12345678abcdef"    
+      Name:
+        type: "string"
+        example: "ERP Cloud"
+      Type:
+        type: "string"
+        example: "Whitepaper"
+      Reference:
+        type: "string"
+        example: "https://cloud.oracle.com/_downloads/WhitePaper_ERP_ImplLeadPract_es_ES/Oracle-ERP-Cloud-Implementation-Leading-Practices-white-paper.pdf"
+      Category:
+        type: "string"
+        example: "Promo"      
+
+  ContactRequest:
+    type: "object"
+    required:
+    - "Name"
+    - "Mobile"
+    - "Email"
+    - "Address"
+    - "OracleContact"
+    - "Notes"
+    properties:
+      Name:
+        type: "string"
+        example: "Jules Verne"
+      Mobile:
+        type: "string"
+        example: "61449977550"
+      Email:
+        type: "string"
+        example: "jules.verne@books.com"
+      Address:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      OracleContact:
+        type: "string"
+        example: "joe.rep@oracle.com"
+      Notes:
+        type: "string"
+        example: "Strong believer in Cloud for all"   
+
+  ContactResponse:
+    type: "object"
+    required:
+    - "_id"
+    - "Name"
+    - "Mobile"
+    - "Email"
+    - "Address"
+    - "Notes"
+    properties:
+      _id:
+        type: "string"
+        example: "12345678abcdef"
+      Name:
+        type: "string"
+        example: "Jules Verne"
+      Mobile:
+        type: "string"
+        example: "61449977550"
+      Email:
+        type: "string"
+        example: "jules.verne@books.com"
+      Address:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      Notes:
+        type: "string"
+        example: "Strong believer in Cloud for all"          
+        
+  OrderRequest:
+    type: "object"
+    required:
+    - "Name"
+    - "Type"
+    - "Channel"
+    - "Reference"
+    - "Quantity"
+    - "ContactEmail"
+    - "OracleContact"
+    properties:
+      Name:
+        type: "string"
+        example: "Umbrella"
+      Type:
+        type: "string"
+        example: "Gift"
+      Channel:
+        type: "string"
+        example: "ShipToAddress"
+      Reference:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      Quantity:
+        type: "integer"
+        example: 1
+      ContactEmail:
+        type: "string"
+        example: "jules.verne@books.com"
+      OracleContact:
+        type: "string"
+        example: "joe.rep@oracle.com"   
+
+  OrderResponse:
+    type: "object"
+    required:
+    - "_id"
+    - "Name"
+    - "Type"
+    - "Channel"
+    - "Reference"
+    - "Quantity"
+    - "ContactEmail"
+    - "OracleContact"
+    - "Status"
+    - "DateTime"
+    properties:
+      _id:
+        type: "string"
+        example: "12345678abcdef"
+      Name:
+        type: "string"
+        example: "Umbrella"
+      Type:
+        type: "string"
+        example: "Gift"
+      Channel:
+        type: "string"
+        example: "ShipToAddress"
+      Reference:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      Quantity:
+        type: "integer"
+        example: 1
+      ContactEmail:
+        type: "string"
+        example: "jules.verne@books.com"
+      OracleContact:
+        type: "string"
+        example: "joe.rep@oracle.com"              
+      Status:
+        type: "string"
+        example: "Open"       
+      DateTime:
+        type: "string"
+        example: "yyyy-MM-ddTHH:mm:ss"           
+            
+externalDocs:
+  description: "Find out more about our APIs"
+  url: "http://apisMadeEasy.cloud"

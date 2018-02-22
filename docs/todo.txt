@@ -1,0 +1,493 @@
+To be Done for Monday 4/12/17:
+
+HBF:
+
+  > Based on William's emails and call on Friday, 
+	we need to get some information/ammunition (bullet points)  about:
+  
+	- Get intel about TIBCO/Mulesoft vs OIC/ICS
+	- Plans for the Mainframe?
+	- Plans to go SaaS?
+	- Open Digital Channel? 
+		- APIs strategy
+		- Cloud Integration Strategy?
+
+
+SaaS Demo
+	
+
+	> Integration:
+
+	- Protect POST Gift and Promos with APIs...
+	- Protect Order POST with Code in Header...
+	
+		- Complete ICS to POST Contacts
+		- Complete ICS to POST Orders and call PCS REST API
+			- ICS/PCS environment cross-domain issues?
+	
+	> Chatbot:
+		- Talk to Vijay and get him up to speed with use case and APIs
+		- 
+	
+	> PCS:
+		- Talk to Vijay and discuss PCS use case	
+			- Options:
+				- POST Order ICS calls PCS to trigger Process?
+				- PCS calls ICS to close Order
+			
+----------------- Swagger Backup prioir to removing POSTS:
+Payloads:
+
+> Gifts:
+
+{
+  "Gifts": [
+    {
+      "Item": "Umbrella",
+      "Brand": "Oracle",
+      "CostInAUD": "20"
+    }
+  ]
+}
+
+> Promos:
+
+{
+  "Promos": [
+    {
+      "Name": "ERP Cloud",
+      "Type": "Whitepaper",
+      "Reference": "https://cloud.oracle.com/_downloads/WhitePaper_ERP_ImplLeadPract_es_ES/Oracle-ERP-Cloud-Implementation-Leading-Practices-white-paper.pdf",
+      "Category": "Promo"
+    }
+  ]
+}
+____________________________
+
+
+swagger: "2.0"
+info:
+  description: "This project provides a platform to use a chatbot to promote SaaS by easily integrating into Oracle Sales Cloud and Oracle ERP Cloud."
+  version: "2.1.0"
+  title: "APIs 4 SaaS Demo"
+  #termsOfService: "http://apismadeeasy.cloud/terms"
+  contact:
+    email: "carlos.rodriguez.iturria@oracle.com"
+  #license:
+  #  name: "Apache 2.0"
+  #  url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: "/"
+#host: "localhost:3000"
+#basePath: "/api/saasdemo"
+host: "apipdev.oracleau.cloud"
+tags:
+- name: "Gifts"
+  description: "Order can be umbrellas, caps, squeeze balls, etc."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+- name: "Promos"
+  description: "Promos can be white papers, customer reference, videos, etc. about areas such as ERP Cloud, CX, HCM, Integration, Process, Mobile, Chatbots, Blockchain, Jokes, etc."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+- name: "Contacts"
+  description: "Contacts are people who have interacted with these APIs to organise a gift or promo to be delivered to them."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+- name: "Orders"
+  description: "Orders occur when a Contact requests a Gift or Promo resource."
+  externalDocs:
+    description: "Find out more"
+    url: "http://apismadeeasy.cloud"
+schemes:
+- "https"
+#- "http"
+security:
+  - X-MyAPI-Key: []
+paths:
+  /gifts:
+    get:
+      tags:
+      - "Gifts"
+      summary: "Finds all available gift records."
+      description: "Gets all gift records"
+      operationId: "getGifts"
+      produces: 
+        - "application/json"
+      responses:
+        200:
+          description: "Returns the full list of Gifts."
+          schema:
+            properties:
+              Gifts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Gift"
+    post:
+      tags:
+      - "Gifts"
+      summary: "Creates new available Gift(s) to choose from."
+      description: "Returns the Id and the new Gift(s)."
+      operationId: "postGift"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Gift(s) that need to be added."
+        required: true
+        schema:
+            properties:
+              Gifts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/Gift"
+      responses:
+        200:
+          description: "Returns the Id and the just created Gift(s)."
+          schema:
+            properties:
+              Gifts:
+                type: "array"
+                items:
+                  $ref: '#/definitions/Gift'
+
+  /promos:
+    get:
+      tags:
+      - "Promos"
+      summary: "Finds all available promos."
+      description: "Gets all promos"
+      operationId: "getPromos"
+      produces: 
+        - "application/json"
+      responses:
+        200:
+          description: "Returns the full list of Promos."
+          schema:
+            properties:
+              Promos:
+                type: "array"
+                items:
+                  $ref: "#/definitions/PromoResponse"
+    post:
+      tags:
+      - "Promos"
+      summary: "Creates new available Promo to choose from."
+      description: "Returns the Id and the new Promo(s)."
+      operationId: "postPromos"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Promo(s) that need to be added."
+        required: true
+        schema:
+            properties:
+              Promos:
+                type: "array"
+                items:
+                  $ref: "#/definitions/PromoRequest"
+      responses:
+        200:
+          description: "Returns the Id and the just created Promo(s)."
+          schema:
+            properties:
+              Promos:
+                type: "array"
+                items:
+                  $ref: '#/definitions/PromoResponse'
+            
+  /contacts:
+    get:
+      tags:
+      - "Contacts"
+      summary: "Finds all available Contact records."
+      description: "Gets all contact records"
+      operationId: "getContacts"
+      produces: 
+        - "application/json"
+      responses:
+        200:
+          description: "Returns the full list of Contacts."
+          schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/ContactResponse"
+    post:
+      tags:
+      - "Contacts"
+      summary: "Creates new available Contact(s) to choose from."
+      description: "Returns the Id and the new Contact(s)."
+      operationId: "postContacts"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Contact(s) that need to be added."
+        required: true
+        schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: "#/definitions/ContactRequest"
+      responses:
+        200:
+          description: "Returns the Id and the just created Contact(s)."
+          schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: '#/definitions/ContactResponse'
+            
+  /orders:
+    get:
+      tags:
+      - "Orders"
+      summary: "Finds all available Orders."
+      description: "Gets all orders"
+      operationId: "getOrders"
+      produces: 
+        - "application/json"
+      responses:
+        200:
+          description: "Returns the full list of Orders."
+          schema:
+            properties:
+              Orders:
+                type: "array"
+                items:
+                  $ref: "#/definitions/OrderResponse"
+    post:
+      tags:
+      - "Orders"
+      summary: "Creates new available Order(s) to choose from."
+      description: "Returns the Id and the new Order(s)."
+      operationId: "postOrders"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Array of Order(s) that need to be added."
+        required: true
+        schema:
+            properties:
+              Orders:
+                type: "array"
+                items:
+                  $ref: "#/definitions/OrderRequest"
+      responses:
+        200:
+          description: "Returns the Id and the just created Order(s)."
+          schema:
+            properties:
+              Orders:
+                type: "array"
+                items:
+                  $ref: '#/definitions/OrderResponse'
+
+securityDefinitions:
+  X-MyAPI-Key:
+    type: "apiKey"
+    name: "x-api-key"
+    in: "header"
+definitions:
+
+  Gift:
+    type: "object"
+    required:
+    - "Item"
+    properties:
+      Item:
+        type: "string"
+        example: "Umbrella"
+      Brand:
+        type: "string"
+        example: "Oracle"
+      CostInAUD:
+        type: "string"
+        example: "20"
+        
+        
+  PromoRequest:
+    type: "object"
+    required:
+    - "Name"
+    - "Type"
+    - "Reference"
+    - "Category"
+    properties:
+      Name:
+        type: "string"
+        example: "ERP Cloud"
+      Type:
+        type: "string"
+        example: "Whitepaper"
+      Reference:
+        type: "string"
+        example: "https://cloud.oracle.com/_downloads/WhitePaper_ERP_ImplLeadPract_es_ES/Oracle-ERP-Cloud-Implementation-Leading-Practices-white-paper.pdf"
+      Category:
+        type: "string"
+        example: "Promo"
+        
+  PromoResponse:
+    type: "object"
+    required:
+    - "_id"
+    - "Name"
+    - "Type"
+    - "Reference"
+    - "Category"
+    properties:
+      _id:
+        type: "string"
+        example: "12345678abcdef"    
+      Name:
+        type: "string"
+        example: "ERP Cloud"
+      Type:
+        type: "string"
+        example: "Whitepaper"
+      Reference:
+        type: "string"
+        example: "https://cloud.oracle.com/_downloads/WhitePaper_ERP_ImplLeadPract_es_ES/Oracle-ERP-Cloud-Implementation-Leading-Practices-white-paper.pdf"
+      Category:
+        type: "string"
+        example: "Promo"      
+
+  ContactRequest:
+    type: "object"
+    required:
+    - "Name"
+    - "Mobile"
+    - "Email"
+    - "Address"
+    - "OracleContact"
+    - "Notes"
+    properties:
+      Name:
+        type: "string"
+        example: "Jules Verne"
+      Mobile:
+        type: "string"
+        example: "61449977550"
+      Email:
+        type: "string"
+        example: "jules.verne@books.com"
+      Address:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      OracleContact:
+        type: "string"
+        example: "Joanne"
+      Notes:
+        type: "string"
+        example: "Strong believer in Cloud for all"   
+
+  ContactResponse:
+    type: "object"
+    required:
+    - "_id"
+    - "Name"
+    - "Mobile"
+    - "Email"
+    - "Address"
+    - "Notes"
+    properties:
+      _id:
+        type: "string"
+        example: "12345678abcdef"
+      Name:
+        type: "string"
+        example: "Jules Verne"
+      Mobile:
+        type: "string"
+        example: "61449977550"
+      Email:
+        type: "string"
+        example: "jules.verne@books.com"
+      Address:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      Notes:
+        type: "string"
+        example: "Strong believer in Cloud for all"          
+        
+  OrderRequest:
+    type: "object"
+    required:
+    - "Name"
+    - "Type"
+    - "Reference"
+    - "ContactId"
+    - "Status"
+    properties:
+      Name:
+        type: "string"
+        example: "Umbrella"
+      Type:
+        type: "string"
+        example: "Gift"
+      Reference:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      ContactId:
+        type: "string"
+        example: "abc12345678def"       
+      Status:
+        type: "string"
+        example: "Open"       
+
+  OrderResponse:
+    type: "object"
+    required:
+    - "_id"
+    - "Name"
+    - "Type"
+    - "Reference"
+    - "ContactId"
+    - "Status"
+    - "DateTime"
+    properties:
+      _id:
+        type: "string"
+        example: "12345678abcdef"
+      Name:
+        type: "string"
+        example: "Umbrella"
+      Type:
+        type: "string"
+        example: "Gift"
+      Reference:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
+      ContactId:
+        type: "string"
+        example: "abc12345678def"       
+      Status:
+        type: "string"
+        example: "Open"       
+      DateTime:
+        type: "string"
+        example: "yyyy-MM-ddTHH:mm:ss"           
+            
+externalDocs:
+  description: "Find out more about our APIs"
+  url: "http://apisMadeEasy.cloud"
