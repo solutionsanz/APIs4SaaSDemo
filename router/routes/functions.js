@@ -273,3 +273,14 @@ function sendBulkJokeRequest(host, port, path, method, post_data, secured) {
 	post_req.end();
 
 }
+
+exports.getNewID = function () {
+
+	var length = 6,
+		charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+		retVal = "";
+	for (var i = 0, n = charset.length; i < length; ++i) {
+		retVal += charset.charAt(Math.floor(Math.random() * n));
+	}
+	return "ORD_" + retVal;
+}

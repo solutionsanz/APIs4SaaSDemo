@@ -5,6 +5,9 @@ var config = require("../../config");
 var http = require('http');
 var https = require('https');
 
+var funct = require('./functions');
+
+
 //CRI change:
 var bodyParser = require('body-parser');
 
@@ -107,6 +110,9 @@ module.exports = function (app) {
 
         // Adding Open status (options include open and closed)
         records[0].Status = "open";
+
+        // Adding new TrackingId
+        records[0].TrackingId = funct.getNewID();
 
         log("POST", "/orders", "Array of records to be inserted is [" + JSON.stringify(records) + "]");
 

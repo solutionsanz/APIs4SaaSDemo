@@ -400,6 +400,7 @@ definitions:
     - "OracleContact"
     - "Status"
     - "DateTime"
+    - "TrackingId"
     properties:
       _id:
         type: "string"
@@ -430,7 +431,10 @@ definitions:
         example: "Open"       
       DateTime:
         type: "string"
-        example: "yyyy-MM-ddTHH:mm:ss"           
+        example: "yyyy-MM-ddTHH:mm:ss"
+      TrackingId:
+        type: "string"
+        example: "ORD_ABC123"           
             
 externalDocs:
   description: "Find out more about our APIs"
