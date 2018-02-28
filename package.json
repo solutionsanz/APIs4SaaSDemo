@@ -21,7 +21,9 @@
     "mongodb": "^2.2.24",
     "monk": "^4.0.0",
     "js-yaml": "^3.8.4",
-    "google-translate-api": "*"
+    "google-translate-api": "*",
+    "gmail-sender-oauth" : "*",
+    "gmail-api-sync" : "*"
   }
 }
 

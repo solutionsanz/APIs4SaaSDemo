@@ -68,15 +68,61 @@ paths:
       operationId: "getPromos"
       produces: 
         - "application/json"
+      parameters:
+      - name: "solution"
+        in: "query"
+        description: "Solution category to filter by, options include: integration, chatbot, blockchain, CX, ERP and HCM."
+        required: false
+        type: "string" 
       responses:
         200:
-          description: "Returns the full list of Promos."
+          description: "Returns the full list of Promos filtered by category."
           schema:
             properties:
               Promos:
                 type: "array"
                 items:
                   $ref: "#/definitions/PromoResponse"
+
+  /notification/promos:                
+    post:
+      tags:
+      - "Promos"
+      summary: "Send the requested promos as a notification, e.g. email, sms, etc."
+      description: "Returns the Promos to be sent to the target recipient."
+      operationId: "postNotificationPromos"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "solution"
+        in: "query"
+        description: "Solution category to filter by, options include: integration, chatbot, blockchain, CX, ERP and HCM."
+        required: false
+        type: "string"       
+      - name: "method"
+        in: "query"
+        description: "Set to 'email' (without quotes) if you want the links to be sent by email."
+        required: true
+        type: "string"         
+      - in: "body"
+        name: "body"
+        description: "Configuration metadata used to send the notification, e.g. email, mobile, address, etc"
+        required: true
+        schema:
+            properties:
+              Method:
+                $ref: "#/definitions/PromosNotificationRequest"
+      responses:
+        200:
+          description: "Returns the just sent Promos."
+          schema:
+            properties:
+              Contacts:
+                type: "array"
+                items:
+                  $ref: '#/definitions/PromoResponse'                  
 
   /contacts:
     get:
@@ -145,7 +191,6 @@ paths:
                 type: "array"
                 items:
                   $ref: '#/definitions/ContactResponse'
-                  
             
   /orders:
     get:
@@ -275,26 +320,50 @@ definitions:
     type: "object"
     required:
     - "_id"
-    - "Name"
-    - "Type"
-    - "Reference"
-    - "Category"
-    properties:
+    - "Solution"
+    - "Links"
+    properties:   
       _id:
         type: "string"
-        example: "12345678abcdef"    
-      Name:
+        example: "123ABC"   
+      Solution:
         type: "string"
-        example: "ERP Cloud"
+        example: "integration"
+      Links:
+        type: "array"
+        items:
+          $ref: "#/definitions/Link"              
+      
+
+  Link:
+    type: "object"
+    required:
+    - "Type"
+    - "Reference"
+    properties:
       Type:
         type: "string"
-        example: "Whitepaper"
+        example: "Video"
       Reference:
         type: "string"
-        example: "https://cloud.oracle.com/_downloads/WhitePaper_ERP_ImplLeadPract_es_ES/Oracle-ERP-Cloud-Implementation-Leading-Practices-white-paper.pdf"
-      Category:
+        example: "https://bit.ly/oicvideo"
+
+  PromosNotificationRequest:
+    type: "object"
+    required:
+    - "Mobile"
+    - "Email"
+    - "Address"
+    properties:
+      Mobile:
         type: "string"
-        example: "Promo"      
+        example: "61449977550"
+      Email:
+        type: "string"
+        example: "jules.verne@books.com"
+      Address:
+        type: "string"
+        example: "417 St. Kilda Rd, 3004, Melbourne, Victoria, Australia"
 
   ContactRequest:
     type: "object"

@@ -3,6 +3,8 @@ var http = require('http');
 var https = require('https');
 const translate = require('google-translate-api');
 
+var gmailSender = require('gmail-sender-oauth');
+
 
 exports.getJoke = function (id, callback) {
 
@@ -142,16 +144,16 @@ exports.getBulkJokes = function (page, callback) {
 
 exports.sendBulkJokes = function () {
 
-        // Invoke API:
-        // Call the voicecall API:        
-        var host = config.API_GW_SERVER;
-        var port = config.API_GW_PORT;
-        var path = config.API_GW_BASEURL + "/bulk/jokes/notification";
-        var method = "POST";
-        var body = "";
+	// Invoke API:
+	// Call the voicecall API:        
+	var host = config.API_GW_SERVER;
+	var port = config.API_GW_PORT;
+	var path = config.API_GW_BASEURL + "/bulk/jokes/notification";
+	var method = "POST";
+	var body = "";
 
-		// Invoke API and execute callback:
-		sendBulkJokeRequest(host, port, path, method, body, true);// Secured, i.e. to be run on HTTPS
+	// Invoke API and execute callback:
+	sendBulkJokeRequest(host, port, path, method, body, true); // Secured, i.e. to be run on HTTPS
 };
 
 function sendRequest(host, port, path, method, body, secured, callback) {
@@ -283,4 +285,35 @@ exports.getNewID = function () {
 		retVal += charset.charAt(Math.floor(Math.random() * n));
 	}
 	return "ORD_" + retVal;
+}
+
+
+exports.sendEmail = function (to, subject, body) {
+
+	console.log("Uploading client secret info");
+
+	gmailSender.setClientSecretsFile('client_secret.json');
+
+	var params = {
+		from: config.GMAIL_FROM,
+		to: to,
+		subject: subject,
+		body: body
+	};
+
+	console.log("Uploading Access Token");
+
+	var accessToken = require("../../client_access_token.json");
+
+	console.log("Sending email...");
+
+	gmailSender.send(accessToken, params, function (err, resp) {
+		if (err) {
+			return console.error('Something went wrong: ' + err);
+		} else {
+			console.log('Message sent with id: ' + resp.id);
+		}
+
+	});
+
 }
