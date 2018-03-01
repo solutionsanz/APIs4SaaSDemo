@@ -103,7 +103,7 @@ paths:
         type: "string"       
       - name: "method"
         in: "query"
-        description: "Set to 'email' (without quotes) if you want the links to be sent by email."
+        description: "Set to the method to send this notification by, example: 'email', 'sms', 'address' (without quotes)."
         required: true
         type: "string"         
       - in: "body"

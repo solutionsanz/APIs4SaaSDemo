@@ -101,18 +101,29 @@ module.exports = function (app) {
 
 
         var solution = req.query.solution; //Promo Category to filter by.
+        var channel = req.query.method; //Channel to be sent, e.g. 'email'
         var notificationMethod = req.body.Method; //Promo Category to filter by.
-        var email, mobile, address;
+        var toEmail, mobile, address;
 
-        if (notificationMethod != null && notificationMethod != undefined) {
+        // Validating channel was populated
+        if (channel == null || channel == undefined) {
 
-            if (notificationMethod.Email != null && notificationMethod.Email != undefined) {
+            result = {
+                "Error": "Method query parameter was not populated"
+            };
 
-                email = notificationMethod.Email;
-                log("POST", "/promos/notification", "Notification method set [email] set to [" + email + "]");
-            }
+            res.send(result);
 
-            // @TODO: Mobile and Address not yet implemented...
+        }
+
+        // Validating Notificatrion body was populated
+        if (notificationMethod == null || notificationMethod == undefined) {
+
+            result = {
+                "Error": "Notification body was not populated"
+            };
+
+            res.send(result);
 
         }
 
@@ -159,46 +170,73 @@ module.exports = function (app) {
                 };
 
 
-            } else {
 
-                result = {
-                    "Error": "Something went wrong, resultset is empty or undefined. Please verify logfile to diagnose root cause."
-                };
-            }
+                switch (channel.toUpperCase()) {
 
-            if (email != null && email != undefined) {
+                    case "EMAIL":
 
-                log("POST", "/promos/notification", "Preparing to send links by email");
-                var template = "";
+                        // Retrieving recipients email ("to" email):
+                        toEmail = notificationMethod.Email;
+                        log("POST", "/promos/notification", "Notification method set [email] set to [" + toEmail + "]");
 
-                switch (solution.toUpperCase()) {
 
-                    case "INTEGRATION":
-                        template = "../../templates/integration.json";
+                        // Loading template to be sent by email:
+                        log("POST", "/promos/notification", "Loading template [" + solution + "] to be sent by email.");
+                        var template = "";
+
+                        switch (solution.toUpperCase()) {
+
+                            case "INTEGRATION":
+                                template = "../../templates/integration.json";
+                                break;
+
+                            case "CHATBOT":
+                                template = "../../templates/chatbot.json";
+                                break;
+
+
+                            case "BLOCKCHAIN":
+                                template = "../../templates/blockchain.json";
+                                break;
+
+
+                            case "CX":
+                                template = "../../templates/cx.json";
+                                break;
+
+
+                            case "ERP":
+                                template = "../../templates/erp.json";
+                                break;
+
+
+                            case "HCM":
+                                template = "../../templates/hcm.json";
+                                break;
+
+                            default:
+                                log("POST", "/promos/notification", "Invalid Content Promo Solution. Nothing to do.");
+                                // Returning result
+                                res.send({
+                                    "Error": "The Solution that you sent is not available, please choose from: integration, chatbot, blockchain, erp, cx and hcm. Thank you."
+                                });
+                        }
+
+                        var emailBody = "";
+                        emailBody = require(template);
+
+                        // Sending email:
+                        funct.sendEmail(toEmail, "Oracle Public Cloud Link Reference", emailBody.body);
+
                         break;
 
-                    case "CHATBOT":
-                        template = "../../templates/chatbot.json";
+                    case "SMS":
+                        // @TODO: Mobile and Address not yet implemented...
                         break;
 
 
-                    case "BLOCKCHAIN":
-                        template = "../../templates/blockchain.json";
-                        break;
-
-
-                    case "CX":
-                        template = "../../templates/cx.json";
-                        break;
-
-
-                    case "ERP":
-                        template = "../../templates/erp.json";
-                        break;
-
-
-                    case "HCM":
-                        template = "../../templates/hcm.json";
+                    case "ADDRESS":
+                        // @TODO: Mobile and Address not yet implemented...
                         break;
 
                     default:
@@ -209,19 +247,17 @@ module.exports = function (app) {
                         });
                 }
 
-                var emailBody = "";
-                emailBody = require(template);
-
-                //log("POST", "/promos/notification", "Body to be sent is [" + emailBody.body + "]");
-
-                // Sending email:
-                funct.sendEmail(email, "Oracle Public Cloud Link Reference", emailBody.body);
-
             } else {
 
-                // Returning result
-                res.send(result);
+                result = {
+                    "Error": "Something went wrong, resultset is empty or undefined. Please verify logfile to diagnose root cause."
+                };
             }
+
+
+            // Returning result
+            res.send(result);
+
 
         });
 
