@@ -12,3 +12,5 @@ client_secret.json
 client_access_token.json
 temp_*
 deployment.json
+docs
+apip
